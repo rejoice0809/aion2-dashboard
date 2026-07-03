@@ -1,8 +1,20 @@
 {
-  "updated_at": "아직 자동 수집 전",
+  "updated_at": "2026-07-03 11:14 KST",
   "boards": {
-    "assassin": { "label": "살성 게시판", "source": "https://www.inven.co.kr/board/aion2/6449", "posts": [] },
-    "gladiator": { "label": "검성 게시판", "source": "https://www.inven.co.kr/board/aion2/6448", "posts": [] },
-    "general": { "label": "자유 게시판(패치노트 등)", "source": "https://www.inven.co.kr/board/aion2/6388", "posts": [] }
+    "assassin": {
+      "label": "살성 게시판",
+      "source": "https://www.inven.co.kr/board/aion2/6449",
+      "posts": []
+    },
+    "gladiator": {
+      "label": "검성 게시판",
+      "source": "https://www.inven.co.kr/board/aion2/6448",
+      "posts": []
+    },
+    "general": {
+      "label": "자유 게시판(패치노트 등)",
+      "source": "https://www.inven.co.kr/board/aion2/6388",
+      "posts": []
+    }
   }
 }
