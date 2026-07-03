@@ -71,10 +71,13 @@ def main():
         try:
             html = fetch(board["url"])
             posts = extract_posts(html)
+            board_result = {"label": board["label"], "source": board["url"], "posts": posts}
+            if not posts:
+                board_result["debug_html_length"] = len(html)
+                board_result["debug_snippet"] = html[:1500]
         except Exception as e:  # noqa: BLE001
-            posts = []
-            result.setdefault("errors", {})[key] = str(e)
-        result["boards"][key] = {"label": board["label"], "source": board["url"], "posts": posts}
+            board_result = {"label": board["label"], "source": board["url"], "posts": [], "debug_error": str(e)}
+        result["boards"][key] = board_result
         time.sleep(1)  # 과도한 요청 방지
 
     with open("data/latest.json", "w", encoding="utf-8") as f:
