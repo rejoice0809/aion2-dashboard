@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>바바룽 · 해나리 & 찡아 | 아트레이아 원정 기록</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Noto+Serif+KR:wght@500;700;900&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --obsidian:#0b0c11;
+    --ash:#15171e;
+    --ash-2:#1c1f28;
+    --bone:#e9e3d6;
+    --stone:#8b8d97;
+    --violet:#8b6ae0;   /* 살성 - 그림자 자수정 */
+    --violet-dim:#4a3a75;
+    --crimson:#cf4b4a;  /* 검성 - 잔불의 진홍 */
+    --crimson-dim:#6e2c2c;
+    --line: rgba(233,227,214,0.09);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(139,106,224,0.12), transparent 60%),
+      radial-gradient(1200px 600px at 85% -10%, rgba(207,75,74,0.12), transparent 60%),
+      var(--obsidian);
+    color:var(--bone);
+    font-family:'Noto Sans KR', sans-serif;
+    line-height:1.6;
+    padding-bottom:80px;
+  }
+  .eyebrow{
+    font-family:'Cinzel', serif;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    font-size:11px;
+    font-weight:600;
+  }
+  h1,h2,h3{ font-family:'Noto Serif KR', serif; font-weight:900; letter-spacing:-0.01em; }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+
+  /* ===== HERO ===== */
+  .hero{
+    position:relative;
+    min-height:78vh;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+  }
+  .hero::before{ /* 결계 균열 */
+    content:"";
+    position:absolute; top:0; bottom:0; left:50%;
+    width:3px; transform:translateX(-50%);
+    background:linear-gradient(180deg, var(--violet), var(--bone) 48%, var(--crimson));
+    box-shadow:0 0 24px rgba(233,227,214,0.35);
+    z-index:5;
+  }
+  .side{
+    padding:64px 48px;
+    display:flex; flex-direction:column; justify-content:center;
+    position:relative;
+  }
+  .side.left{ background:linear-gradient(120deg, rgba(139,106,224,0.10), transparent 70%); align-items:flex-end; text-align:right; }
+  .side.right{ background:linear-gradient(240deg, rgba(207,75,74,0.10), transparent 70%); align-items:flex-start; text-align:left; }
+  .side .eyebrow.v{ color:var(--violet); }
+  .side .eyebrow.c{ color:var(--crimson); }
+  .role-tag{
+    display:inline-block; margin-top:14px;
+    padding:5px 14px; border:1px solid currentColor; border-radius:2px;
+    font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.15em;
+  }
+  .charname{ font-size:clamp(40px,6vw,64px); margin-top:18px; line-height:1.05; }
+  .charname .job{ display:block; font-size:0.42em; color:var(--stone); font-weight:500; margin-top:8px; letter-spacing:0.02em; }
+  .side p.desc{ max-width:380px; margin-top:18px; color:var(--stone); font-size:14.5px; }
+  .side .linkbtn{
+    margin-top:26px; font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.12em;
+    text-decoration:none; color:var(--bone); border-bottom:1px solid var(--stone); padding-bottom:4px;
+    transition:.2s;
+  }
+  .side.left .linkbtn:hover{ color:var(--violet); border-color:var(--violet); }
+  .side.right .linkbtn:hover{ color:var(--crimson); border-color:var(--crimson); }
+  .hero-footer{
+    position:absolute; bottom:22px; left:0; right:0; text-align:center;
+    font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.3em; color:var(--stone); z-index:6;
+  }
+
+  /* ===== SECTION SHELL ===== */
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 32px; }
+  section.block{ padding:72px 0; border-bottom:1px solid var(--line); }
+  .block-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:36px; }
+  .block-head .num{ font-family:'JetBrains Mono',monospace; color:var(--stone); font-size:13px; }
+  .block-head h2{ font-size:clamp(24px,3vw,32px); }
+  .block-head .rule{ flex:1; height:1px; background:var(--line); }
+
+  /* ===== BUILD TABS ===== */
+  .tabs{ display:flex; gap:10px; margin-bottom:28px; }
+  .tab{
+    font-family:'Cinzel',serif; font-size:12px; letter-spacing:0.1em;
+    padding:10px 20px; border:1px solid var(--line); border-radius:2px; cursor:pointer;
+    background:var(--ash); color:var(--stone); transition:.2s;
+  }
+  .tab.active[data-c="v"]{ color:var(--violet); border-color:var(--violet-dim); background:rgba(139,106,224,0.08); }
+  .tab.active[data-c="c"]{ color:var(--crimson); border-color:var(--crimson-dim); background:rgba(207,75,74,0.08); }
+
+  .buildpanel{ display:none; }
+  .buildpanel.active{ display:grid; grid-template-columns:1.1fr 1fr; gap:36px; }
+  @media (max-width:760px){ .buildpanel.active{ grid-template-columns:1fr; } .hero{ grid-template-columns:1fr; } .hero::before{ display:none; } .side{ align-items:flex-start!important; text-align:left!important; padding:44px 24px; } }
+
+  .card{ background:var(--ash); border:1px solid var(--line); border-radius:4px; padding:26px 28px; }
+  .card h3{ font-size:16px; margin-bottom:14px; color:var(--bone); }
+  .card h3 .tag{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--stone); font-weight:400; margin-left:8px;}
+  .card ol, .card ul{ padding-left:18px; color:var(--stone); font-size:14px; }
+  .card li{ margin-bottom:8px; }
+  .card li b{ color:var(--bone); font-weight:700; }
+  .skillgrid{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+  .pill{ font-family:'JetBrains Mono',monospace; font-size:11.5px; padding:5px 10px; border-radius:20px; border:1px solid var(--line); color:var(--stone); }
+  .cycle{ margin-top:20px; padding-top:18px; border-top:1px dashed var(--line); }
+  .cycle .flow{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; font-size:13px; color:var(--bone); margin-top:8px;}
+  .cycle .flow span.arrow{ color:var(--stone); }
+
+  /* ===== PATCH NOTES ===== */
+  .patchlist{ display:flex; flex-direction:column; gap:18px; }
+  .patchitem{ display:grid; grid-template-columns:110px 1fr; gap:20px; padding:18px 0; border-bottom:1px solid var(--line); }
+  .patchitem:last-child{ border-bottom:none; }
+  .patchdate{ font-family:'JetBrains Mono',monospace; color:var(--stone); font-size:13px; }
+  .patchitem h4{ font-family:'Noto Serif KR',serif; font-size:16px; margin-bottom:6px; }
+  .patchitem p{ color:var(--stone); font-size:14px; }
+  .badge{ display:inline-block; font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.1em; padding:3px 9px; border-radius:20px; margin-right:6px; margin-bottom:8px; }
+  .badge.new{ background:rgba(139,106,224,0.15); color:var(--violet); border:1px solid var(--violet-dim); }
+  .badge.class{ background:rgba(207,75,74,0.15); color:var(--crimson); border:1px solid var(--crimson-dim); }
+
+  /* ===== MARKET ===== */
+  .marketgrid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:16px; }
+  .marketcard{ background:var(--ash); border:1px solid var(--line); border-radius:4px; padding:20px; }
+  .marketcard .label{ font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.1em; color:var(--stone); margin-bottom:10px; display:block;}
+  .marketcard a{ color:var(--bone); text-decoration:none; font-weight:700; font-size:15px; }
+  .marketcard a:hover{ color:var(--violet); }
+  .marketcard p{ font-size:13px; color:var(--stone); margin-top:8px; }
+  .note{ margin-top:22px; padding:16px 18px; background:rgba(207,75,74,0.06); border:1px solid var(--crimson-dim); border-radius:4px; font-size:13.5px; color:var(--stone); }
+
+  /* ===== LINK HUB ===== */
+  .linktable{ width:100%; border-collapse:collapse; }
+  .linktable tr{ border-bottom:1px solid var(--line); }
+  .linktable td{ padding:16px 8px; font-size:14px; vertical-align:top; }
+  .linktable td.site{ font-family:'Noto Serif KR',serif; font-weight:700; width:200px; }
+  .linktable a{ color:var(--violet); text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:12.5px; }
+  .linktable a:hover{ text-decoration:underline; }
+  .linktable td.desc{ color:var(--stone); }
+
+  footer{ text-align:center; padding:48px 0 0; color:var(--stone); font-size:12px; font-family:'JetBrains Mono',monospace; }
+</style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="side left">
+      <span class="eyebrow v">본캐 · 살성 · MAIN</span>
+      <div class="charname">해나리<span class="job">암살자, 배후의 그림자</span></div>
+      <span class="role-tag" style="color:var(--violet)">치명타 · 백어택 딜러</span>
+      <p class="desc">문양을 각인하고 터뜨려 폭딜을 꽂는 근접 어쌔신. 은신과 회피로 살아남고, 등을 잡는 순간 전투가 끝난다.</p>
+      <a class="linkbtn" href="https://aion2.plaync.com/ko-kr/characters/2018/lrXpidRveDSY43S2JfjQrn5-7djFW8svH8khm86-RgM=" target="_blank">공식 캐릭터 정보실 →</a>
+    </div>
+    <div class="side right">
+      <span class="eyebrow c">부캐 · 검성 · SUB</span>
+      <div class="charname">찡아<span class="job">대검전사, 흔들리지 않는 창날</span></div>
+      <span class="role-tag" style="color:var(--crimson)">근접 브루저 · 흡혈딜탱</span>
+      <p class="desc">붙어서 끊임없이 내려친다. 흡혈로 버티고, 지켈의 축복이 도는 순간 폭발적인 연계가 쏟아진다.</p>
+      <a class="linkbtn" href="https://aion2.plaync.com/ko-kr/characters/index" target="_blank">공식 캐릭터 검색 →</a>
+    </div>
+    <div class="hero-footer">바바룽 서버 · 마족 · AION2 원정 기록</div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- BUILD -->
+    <section class="block">
+      <div class="block-head"><span class="num">01</span><h2>빌드 · 스킬트리</h2><span class="rule"></span></div>
+
+      <div class="tabs">
+        <div class="tab active" data-c="v" onclick="showTab('assassin')">살성 · 해나리</div>
+        <div class="tab" data-c="c" onclick="showTab('gladiator')">검성 · 찡아</div>
+      </div>
+
+      <div id="assassin" class="buildpanel active">
+        <div class="card">
+          <h3>핵심 메커니즘 <span class="tag">PVE 기준</span></h3>
+          <p style="color:var(--stone); font-size:14px;">평타·스킬로 <b>문양</b>을 쌓고 → <b>문양 폭발</b>로 대상을 기절시킨 뒤 → <b>심장 찌르기</b>를 무한 난사(치명타가 터질 때마다 재사용 대기시간 초기화)하는 구조. 심장 찌르기 16레벨 확보 전후로 화력 차이가 크므로, 초반에는 장비의 '+스킬 레벨' 옵션 확보가 최우선입니다.</p>
+          <div class="cycle">
+            <div class="eyebrow" style="color:var(--stone)">딜 사이클</div>
+            <div class="flow">
+              <span>실명(오프너)</span><span class="arrow">→</span><span>평타/강공격으로 문양 각인</span><span class="arrow">→</span><span>문양 폭발(기절)</span><span class="arrow">→</span><span style="color:var(--violet)">환영 분신 + 심장 찌르기 난사</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>20레벨 우선 투자</h3>
+          <div class="skillgrid">
+            <span class="pill">심장 찌르기</span><span class="pill">기습</span><span class="pill">빠른 베기</span><span class="pill">문양 폭발</span>
+          </div>
+          <h3 style="margin-top:22px;">핵심 패시브 · 버프</h3>
+          <ul>
+            <li><b>트리니엘의 비수</b> — 스킬 피해·쿨감, 후방 공격 시 피해 50% 증가</li>
+            <li><b>환영 분신</b> — 10초간 추가 피해 딜소스, 극딜 타이밍 필수</li>
+            <li><b>신속의 계약</b> — 전투 속도 증가로 문양 적립 가속</li>
+            <li><b>맹수의 송곳니</b> — 보스 그로기 게이지 대량 삭감</li>
+          </ul>
+        </div>
+      </div>
+
+      <div id="gladiator" class="buildpanel">
+        <div class="card">
+          <h3>핵심 메커니즘 <span class="tag">PVE 기준</span></h3>
+          <p style="color:var(--stone); font-size:14px;">'붙어서 끊임없이 때리는' 컨셉의 근접 브루저. <b>지켈의 축복</b>이 사실상 0티어 버프이며 15레벨 이상을 목표로 합니다. 흡혈 스킬로 유지력을 확보하고, 넘어짐(CC)으로 딜 각을 만드는 것이 핵심입니다.</p>
+          <div class="cycle">
+            <div class="eyebrow" style="color:var(--stone)">딜 사이클</div>
+            <div class="flow">
+              <span>발목 격파로 접근</span><span class="arrow">→</span><span>전투 준비 버프 가동</span><span class="arrow">→</span><span style="color:var(--crimson)">지켈의 축복 + 분쇄 파동</span><span class="arrow">→</span><span>재시전 초기화 연계</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>필수 스킬 구성</h3>
+          <div class="skillgrid">
+            <span class="pill">지켈의 축복</span><span class="pill">분쇄 파동</span><span class="pill">절단의 맹타</span><span class="pill">유린의 검(16↑)</span><span class="pill">내려찍기(16~20)</span>
+          </div>
+          <h3 style="margin-top:22px;">PvE 스티그마 세팅</h3>
+          <ul>
+            <li><b>균형의 갑옷 · 지켈의 축복</b> — 15레벨, 여유되면 20레벨까지</li>
+            <li><b>돌격 자세 · 막기 · 경로 폭발</b> — 접근/생존/그로기 대응용</li>
+            <li><b>유린의 검</b> — 피해의 30% 생명력 흡수, 막기·회피 무시</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- PATCH -->
+    <section class="block">
+      <div class="block-head"><span class="num">02</span><h2>최신 업데이트</h2><span class="rule"></span></div>
+      <div class="patchlist">
+        <div class="patchitem">
+          <div class="patchdate">2026.07.01</div>
+          <div>
+            <span class="badge new">챕터1 오픈</span><span class="badge class">신규 지역</span>
+            <h4>Chapter 1. 모래와 서리의 땅</h4>
+            <p>천족 신규 영지 '엘테넨', 마족 신규 영지 '모르헤임'이 추가되었습니다. 베르테론/알트가르드 영웅 퀘스트 완료 후 생성되는 공간 이동 포탈로 진입하며, 레벨·아이템 레벨·전투력 조건이 필요합니다. 신규 영지는 챕터1-1차/2차로 순차 공개됩니다.</p>
+          </div>
+        </div>
+        <div class="patchitem">
+          <div class="patchdate">2026.06.14</div>
+          <div>
+            <span class="badge class">신규 클래스</span>
+            <h4>권성 예고 (여름 쇼케이스)</h4>
+            <p>주먹과 발을 사용하는 격투 클래스 '권성' 공개. 정신력 대신 '분노' 자원을 사용하며, 분노를 모아 터뜨리면 폭주 상태로 돌입해 스킬 세트가 변경되는 것이 핵심 메커니즘입니다.</p>
+          </div>
+        </div>
+        <div class="patchitem">
+          <div class="patchdate">진행 중</div>
+          <div>
+            <span class="badge new">시즌 전환</span>
+            <h4>챕터1 1차 어비스 매칭 · 데바 패스 3종</h4>
+            <p>시즌3 매칭 체계가 챕터1 1차 어비스 매칭으로 전환되었고(홈 서버 정보·아티팩트 점령전·서버 우세 현황 반영), 성장 지원용 데바 패스 3종(불꽃의 유산 · 영웅의 초대장 · 환영의 첫 만남)이 진행 중입니다.</p>
+          </div>
+        </div>
+      </div>
+      <div class="note">패치노트는 매주 수요일 정기점검과 함께 갱신됩니다. 최신 원문은 <a href="https://aion2.plaync.com/ko-kr/board/update/list" style="color:var(--crimson)">공식 업데이트 게시판</a>에서 확인하세요.</div>
+    </section>
+
+    <!-- MARKET -->
+    <section class="block">
+      <div class="block-head"><span class="num">03</span><h2>시세 · 경매장</h2><span class="rule"></span></div>
+      <p style="color:var(--stone); font-size:14px; margin-bottom:24px;">경매장 시세는 서버별로 실시간 변동됩니다. 인게임 경매장이 가장 정확하며, 아래 사이트에서 키나 시세·아이템 거래가를 참고할 수 있습니다.</p>
+      <div class="marketgrid">
+        <div class="marketcard">
+          <span class="label">KINA RATE</span>
+          <a href="https://gamebit.co.kr/aion" target="_blank">게임비트 – 아이온2 키나 시세</a>
+          <p>서버별 실시간 키나 시세·차트·등락률·거래량</p>
+        </div>
+        <div class="marketcard">
+          <span class="label">ACCOUNT / ITEM</span>
+          <a href="https://www.jeo8gye.com/trade/list?game_code=210" target="_blank">저팔계 – 시세확인</a>
+          <p>서버·직업별 계정 시세 및 감정 서비스</p>
+        </div>
+        <div class="marketcard">
+          <span class="label">MARKETPLACE</span>
+          <a href="https://www.itemmania.com/buy/all/aion2" target="_blank">아이템매니아</a>
+          <p>키나·큐나·다이아·아이템·계정 통합 거래</p>
+        </div>
+        <div class="marketcard">
+          <span class="label">MARKETPLACE</span>
+          <a href="https://www.itembay.com/item/sell/game-3603" target="_blank">아이템베이</a>
+          <p>게임머니·아이템·계정 판매 리스트</p>
+        </div>
+      </div>
+      <div class="note" style="border-color:var(--violet-dim); background:rgba(139,106,224,0.06);">개인 간 거래 사이트는 사기 위험이 있으니 공식 경매장·검증된 채널 이용을 권장합니다.</div>
+    </section>
+
+    <!-- LINK HUB -->
+    <section class="block" style="border-bottom:none;">
+      <div class="block-head"><span class="num">04</span><h2>정보 사이트 모음</h2><span class="rule"></span></div>
+      <table class="linktable">
+        <tr>
+          <td class="site">공식 캐릭터 정보실</td>
+          <td class="desc">캐릭터 스탯·장비·아르카나 확인. 본캐 링크는 상단 히어로에 고정.</td>
+          <td><a href="https://aion2.plaync.com/ko-kr/characters/index" target="_blank">바로가기</a></td>
+        </tr>
+        <tr>
+          <td class="site">아툴 (aion2tool)</td>
+          <td class="desc">캐릭터 검색·랭킹·직업별 통계, 스펙업 순서·PVP 세팅 추천</td>
+          <td><a href="https://aion2tool.com/" target="_blank">바로가기</a></td>
+        </tr>
+        <tr>
+          <td class="site">아온이 (aon2.info)</td>
+          <td class="desc">캐릭터 검색·랭킹·통계 비공식 정보 사이트</td>
+          <td><a href="https://www.aon2.info/" target="_blank">바로가기</a></td>
+        </tr>
+        <tr>
+          <td class="site">아이온잉 (aion.ing)</td>
+          <td class="desc">캐릭터 리뷰, 강화 시뮬레이터, 큐나 계산기</td>
+          <td><a href="https://aion.ing/p/sr/" target="_blank">바로가기</a></td>
+        </tr>
+        <tr>
+          <td class="site">아이온2 인벤</td>
+          <td class="desc">직업별 게시판, 패치노트, 공략 · 살성/검성 게시판 다수</td>
+          <td><a href="https://aion2.inven.co.kr/" target="_blank">바로가기</a></td>
+        </tr>
+        <tr>
+          <td class="site">스킬 시뮬레이터</td>
+          <td class="desc">인벤 DB, 스킬트리 직접 조합해보기</td>
+          <td><a href="https://aion2.inven.co.kr/db/skillsimulator/193" target="_blank">바로가기</a></td>
+        </tr>
+      </table>
+    </section>
+
+    <footer>
+      2026.07.03 기준 수집 정보 · 다음 대화에서 "업데이트해줘"라고 하면 최신 정보로 다시 갱신해 드립니다.
+    </footer>
+  </div>
+
+<script>
+function showTab(id){
+  document.querySelectorAll('.buildpanel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+</script>
+</body>
+</html>
