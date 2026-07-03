@@ -10,27 +10,28 @@ from datetime import datetime, timezone, timedelta
 import urllib.request
 
 BOARDS = {
-    "assassin": {"label": "살성 게시판", "url": "https://www.inven.co.kr/board/aion2/6449"},
-    "gladiator": {"label": "검성 게시판", "url": "https://www.inven.co.kr/board/aion2/6448"},
-    "general": {"label": "자유 게시판(패치노트 등)", "url": "https://www.inven.co.kr/board/aion2/6388"},
+    "assassin": {"label": "살성 게시판", "url": "https://m.inven.co.kr/board/aion2/6449"},
+    "gladiator": {"label": "검성 게시판", "url": "https://m.inven.co.kr/board/aion2/6448"},
+    "general": {"label": "자유 게시판(패치노트 등)", "url": "https://m.inven.co.kr/board/aion2/6388"},
 }
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                  "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+    "User-Agent": "Mozilla/5.0 (Linux; Android 13; SM-G991N) AppleWebKit/537.36 "
+                  "(KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36"
 }
 
-# 인벤 게시판 리스트에서 흔히 쓰이는 글 링크 패턴: /board/aion2/{board_id}/{article_no}
-LINK_PATTERN = re.compile(r'href="(/board/aion2/\d+/\d+[^"]*)"[^>]*(?:title="([^"]*)")?')
-TITLE_TAG_PATTERN = re.compile(
-    r'<a[^>]+href="(/board/aion2/\d+/\d+[^"]*)"[^>]*class="[^"]*(?:subject|tit)[^"]*"[^>]*>(.*?)</a>',
+# 인벤 모바일 게시판의 글 링크 패턴: /board/aion2/{게시판id}/{글번호}
+POST_LINK_PATTERN = re.compile(
+    r'<a[^>]+href="(/board/aion2/\d+/(\d+)[^"]*)"[^>]*>(.*?)</a>',
     re.IGNORECASE | re.DOTALL,
 )
 TAG_STRIP = re.compile(r"<[^>]+>")
+SKIP_TEXT = {"목록", "글쓰기", "다음글", "이전글", "이전페이지", "맨위로", "더보기+", "검색", "전체보기", "공지", "다음", "최근"}
+COMMENT_PATTERN = re.compile(r"^\d+\s*댓글$")
 
 
 def clean(text: str) -> str:
-    text = TAG_STRIP.sub("", text)
+    text = TAG_STRIP.sub(" ", text)
     return re.sub(r"\s+", " ", text).strip()
 
 
@@ -40,22 +41,19 @@ def fetch(url: str) -> str:
         return resp.read().decode("utf-8", errors="replace")
 
 
-def extract_posts(html: str, base_url: str, limit: int = 8):
+def extract_posts(html: str, limit: int = 10):
     posts = []
-    seen = set()
+    seen_ids = set()
 
-    matches = TITLE_TAG_PATTERN.findall(html)
-    if not matches:
-        # 폴백: class 매칭이 실패하면 일반 링크 패턴으로 재시도
-        matches = [(m.group(1), m.group(2) or "") for m in LINK_PATTERN.finditer(html)]
-
-    for href, raw_title in matches:
+    for href, article_id, raw_title in POST_LINK_PATTERN.findall(html):
         title = clean(raw_title)
-        if not title or len(title) < 2:
+        if not title or len(title) < 3:
             continue
-        if href in seen:
+        if title in SKIP_TEXT or COMMENT_PATTERN.match(title):
             continue
-        seen.add(href)
+        if article_id in seen_ids:
+            continue
+        seen_ids.add(article_id)
         full_url = href if href.startswith("http") else f"https://www.inven.co.kr{href}"
         posts.append({"title": title, "url": full_url})
         if len(posts) >= limit:
@@ -72,7 +70,7 @@ def main():
     for key, board in BOARDS.items():
         try:
             html = fetch(board["url"])
-            posts = extract_posts(html, board["url"])
+            posts = extract_posts(html)
         except Exception as e:  # noqa: BLE001
             posts = []
             result.setdefault("errors", {})[key] = str(e)
