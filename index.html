@@ -150,6 +150,22 @@
   .linktable td.desc{ color:var(--stone); }
 
   footer{ text-align:center; padding:48px 0 0; color:var(--stone); font-size:12px; font-family:'JetBrains Mono',monospace; }
+
+  /* ===== LIVE FEED ===== */
+  .feedgrid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; }
+  @media (max-width:820px){ .feedgrid{ grid-template-columns:1fr; } }
+  .feedcol h3{ font-size:15px; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--line); }
+  .feedcol ul{ list-style:none; display:flex; flex-direction:column; gap:10px; }
+  .feedcol a{ color:var(--bone); text-decoration:none; font-size:13.5px; line-height:1.5; display:block; }
+  .feedcol a:hover{ color:var(--violet); }
+  .feedcol .empty{ color:var(--stone); font-size:13px; }
+  .feed-meta{ display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+  .feed-meta .ts{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--stone); }
+  .feed-meta button{
+    font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.1em; color:var(--bone);
+    background:var(--ash); border:1px solid var(--line); border-radius:2px; padding:8px 16px; cursor:pointer;
+  }
+  .feed-meta button:hover{ border-color:var(--violet); color:var(--violet); }
 </style>
 </head>
 <body>
@@ -297,9 +313,26 @@
       <div class="note" style="border-color:var(--violet-dim); background:rgba(139,106,224,0.06);">개인 간 거래 사이트는 사기 위험이 있으니 공식 경매장·검증된 채널 이용을 권장합니다.</div>
     </section>
 
+    <!-- LIVE FEED -->
+    <section class="block">
+      <div class="block-head"><span class="num">04</span><h2>인벤 실시간 소식</h2><span class="rule"></span></div>
+      <div class="feed-meta">
+        <span class="ts" id="feed-ts">불러오는 중…</span>
+        <button onclick="loadFeed()">새로고침</button>
+      </div>
+      <div class="feedgrid" id="feed-grid">
+        <div class="feedcol"><h3>살성 게시판</h3><ul class="empty"><li>불러오는 중…</li></ul></div>
+        <div class="feedcol"><h3>검성 게시판</h3><ul class="empty"><li>불러오는 중…</li></ul></div>
+        <div class="feedcol"><h3>자유 게시판(패치노트 등)</h3><ul class="empty"><li>불러오는 중…</li></ul></div>
+      </div>
+      <div class="note" style="border-color:var(--violet-dim); background:rgba(139,106,224,0.06);">
+        GitHub Actions가 매시간 인벤 게시판의 최신 글 제목만 자동으로 수집합니다. 본문은 저작권상 가져오지 않으니, 제목 클릭 시 원문으로 이동해서 확인하세요.
+      </div>
+    </section>
+
     <!-- LINK HUB -->
     <section class="block" style="border-bottom:none;">
-      <div class="block-head"><span class="num">04</span><h2>정보 사이트 모음</h2><span class="rule"></span></div>
+      <div class="block-head"><span class="num">05</span><h2>정보 사이트 모음</h2><span class="rule"></span></div>
       <table class="linktable">
         <tr>
           <td class="site">공식 캐릭터 정보실</td>
@@ -346,6 +379,41 @@ function showTab(id){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   event.currentTarget.classList.add('active');
 }
+
+const FEED_ORDER = ['assassin','gladiator','general'];
+
+async function loadFeed(){
+  const ts = document.getElementById('feed-ts');
+  const grid = document.getElementById('feed-grid');
+  ts.textContent = '불러오는 중…';
+  try{
+    const res = await fetch('./data/latest.json', { cache: 'no-store' });
+    if(!res.ok) throw new Error('데이터 없음');
+    const data = await res.json();
+    ts.textContent = '마지막 업데이트 · ' + (data.updated_at || '알 수 없음');
+
+    grid.innerHTML = FEED_ORDER.map(key => {
+      const board = data.boards && data.boards[key];
+      const label = board ? board.label : key;
+      const posts = board && board.posts ? board.posts : [];
+      const items = posts.length
+        ? posts.map(p => `<li><a href="${p.url}" target="_blank">${escapeHtml(p.title)}</a></li>`).join('')
+        : `<li class="empty">아직 수집된 글이 없어요.</li>`;
+      return `<div class="feedcol"><h3>${escapeHtml(label)}</h3><ul>${items}</ul></div>`;
+    }).join('');
+  }catch(err){
+    ts.textContent = '피드를 아직 불러올 수 없어요 (첫 자동 실행 전이거나 오류)';
+    grid.innerHTML = FEED_ORDER.map(key =>
+      `<div class="feedcol"><h3>${key}</h3><ul class="empty"><li>데이터 준비 중입니다.</li></ul></div>`
+    ).join('');
+  }
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+loadFeed();
 </script>
 </body>
 </html>
